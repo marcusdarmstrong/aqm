@@ -1,0 +1,48 @@
+groups:
+  - name: nowcast
+    rules:
+      - record: nowcast:weight_factor
+        expr: clamp_min(min_over_time(aqm_particulate_matter[12h]) / max_over_time(aqm_particulate_matter[12h]), 0.5)
+      - record: nowcast:particulate_matter
+        expr: (
+            avg_over_time(aqm_particulate_matter[1h])
+            + nowcast:weight_factor * avg_over_time(aqm_particulate_matter[1h] offset 1h)
+            + nowcast:weight_factor ^ 2 * avg_over_time(aqm_particulate_matter[1h] offset 2h)
+            + nowcast:weight_factor ^ 3 * avg_over_time(aqm_particulate_matter[1h] offset 3h)
+            + nowcast:weight_factor ^ 4 * avg_over_time(aqm_particulate_matter[1h] offset 4h)
+            + nowcast:weight_factor ^ 5 * avg_over_time(aqm_particulate_matter[1h] offset 5h)
+            + nowcast:weight_factor ^ 6 * avg_over_time(aqm_particulate_matter[1h] offset 6h)
+            + nowcast:weight_factor ^ 7 * avg_over_time(aqm_particulate_matter[1h] offset 7h)
+            + nowcast:weight_factor ^ 8 * avg_over_time(aqm_particulate_matter[1h] offset 8h)
+            + nowcast:weight_factor ^ 9 * avg_over_time(aqm_particulate_matter[1h] offset 9h)
+            + nowcast:weight_factor ^ 10 * avg_over_time(aqm_particulate_matter[1h] offset 10h)
+            + nowcast:weight_factor ^ 11 * avg_over_time(aqm_particulate_matter[1h] offset 11h)
+          ) / (
+            1 + nowcast:weight_factor + nowcast:weight_factor^2 + nowcast:weight_factor^3
+            + nowcast:weight_factor^4 + nowcast:weight_factor^5 + nowcast:weight_factor^6 + nowcast:weight_factor^7
+            + nowcast:weight_factor^8 + nowcast:weight_factor^9 + nowcast:weight_factor^10 + nowcast:weight_factor^11
+          )
+  - name: aqi
+    rules:
+      - record: aqi:24h
+        labels:
+          size: "2.5"
+        expr: (
+            clamp(avg_over_time(aqm_particulate_matter{size="2.5"}[24h]) * 50/15.4, 0, 50) +
+            clamp((avg_over_time(aqm_particulate_matter{size="2.5"}[24h]) - 15.4) * 50/(40.4-15.4), 0, 50) +
+            clamp((avg_over_time(aqm_particulate_matter{size="2.5"}[24h]) - 40.4) * 50/(65.4-40.5), 0, 50) +
+            clamp((avg_over_time(aqm_particulate_matter{size="2.5"}[24h]) - 64.4) * 50/(150.4-65.5), 0, 50) +
+            clamp((avg_over_time(aqm_particulate_matter{size="2.5"}[24h]) - 150.4) * 100/(250.4-150.5), 0, 100) +
+            clamp((avg_over_time(aqm_particulate_matter{size="2.5"}[24h]) - 250.4) * 200/(500.4-250.5), 0, 200)
+          )
+      - record: aqi:nowcast
+        labels:
+          size: "2.5"
+        expr: (
+            clamp(nowcast:particulate_matter{size="2.5"} * 50/15.4, 0, 50) +
+            clamp((nowcast:particulate_matter{size="2.5"} - 15.4) * 50/(40.4-15.4), 0, 50) +
+            clamp((nowcast:particulate_matter{size="2.5"} - 40.4) * 50/(65.4-40.5), 0, 50) +
+            clamp((nowcast:particulate_matter{size="2.5"} - 64.4) * 50/(150.4-65.5), 0, 50) +
+            clamp((nowcast:particulate_matter{size="2.5"} - 150.4) * 100/(250.4-150.5), 0, 100) +
+            clamp((nowcast:particulate_matter{size="2.5"} - 250.4) * 200/(500.4-250.5), 0, 200)
+          )

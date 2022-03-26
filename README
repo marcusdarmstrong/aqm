@@ -1,0 +1,54 @@
+Stuff you'll need:
+
+Temperature/Pressure/Humidity/VOC Sensor $19.95 (https://www.adafruit.com/product/5046)
+PM Sensor $44.95 (https://www.adafruit.com/product/4632)
+Microcontroller $24.95 (https://www.adafruit.com/product/4769)
+Cables 2x $0.95 (https://www.adafruit.com/product/4399)
+[optional] Battery $6.95 (https://www.adafruit.com/product/3898)
+
+The battery is capable of powering the sensor for something like 2h, so it's really only useful for pretty short term stuff movements and such.
+
+USB-C Cable
+USB-PD Power Supply
+A machine to run the monitoring software
+
+
+How to:
+
+Assemble the components. This is super easy, there's no soldering, and the sensors daisy chain so there's no real wrong way to do it.
+
+Install the Arduino IDE: https://www.arduino.cc/en/software
+
+Install the ESP32-S2 Board Support: https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html#installing-using-boards-manager
+
+Install the PM2.5 sensor library:
+https://learn.adafruit.com/pmsa003i/arduino#library-installation-3067552-4
+
+Install the BME680 sensor library:
+https://learn.adafruit.com/adafruit-bme680-humidity-temperature-barometic-pressure-voc-gas/arduino-wiring-test#install-adafruit-bme680-library-2957123-7
+
+Install Prometheus Arduino:
+https://github.com/grafana/prometheus-arduino
+
+Get the monitoring environment set up. You'll need prometheus, and I suggest grafana on top of that:
+
+docker run -d -name=prometheus -p 9090:9090 prom/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles --web.enable-remote-write-receiver --storage.tsdb.retention.time=5y
+
+	TODO: copy/configure aqi.rules.yml
+
+docker run -d --name=grafana -p 3000:3000 grafana/grafana
+
+Configure a grafana datasource pointed to `http://host.docker.internal:9090`
+
+Set up a dashboard with the provided grafana dashboard description, if you'd like.
+
+Set the required configuration in the provided sketch:
+
+#define WIFI_SSID "Wifi SSID"
+#define WIFI_PASSWORD "***********"
+#define NODE "kitchen" // This is an identifying name for the controller so multiples can be distinguished in prometheus across locations in your home, for example.
+#define URL "Marcuss-MBP.localdomain" // The hostname pointing to your prometheus instance
+#define PATH "/api/v1/write" // This is the default remote write path prometheus will use
+#define PORT 9090 
+
+Plug in the board via USB-C and upload the provided sketch to the board: https://learn.adafruit.com/adafruit-esp32-s2-feather/using-with-arduino-ide
