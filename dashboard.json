@@ -3,7 +3,10 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -21,11 +24,14 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": 1,
   "links": [],
   "liveNow": false,
   "panels": [
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -88,7 +94,7 @@
         },
         "textMode": "value_and_name"
       },
-      "pluginVersion": "8.4.1",
+      "pluginVersion": "9.0.1",
       "targets": [
         {
           "datasource": {
@@ -107,6 +113,10 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -169,7 +179,7 @@
         },
         "textMode": "value_and_name"
       },
-      "pluginVersion": "8.4.1",
+      "pluginVersion": "9.0.1",
       "targets": [
         {
           "datasource": {
@@ -188,6 +198,10 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -234,7 +248,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.1",
+      "pluginVersion": "9.0.1",
       "targets": [
         {
           "datasource": {
@@ -242,7 +256,7 @@
             "uid": "prometheus"
           },
           "exemplar": true,
-          "expr": "aqm_temperature_degf{sensor=\"bme\"}",
+          "expr": "aqm_temperature_degf{sensor=\"scd\"}",
           "interval": "",
           "legendFormat": "{{host}}",
           "refId": "A"
@@ -252,6 +266,10 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -300,7 +318,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.1",
+      "pluginVersion": "9.0.1",
       "targets": [
         {
           "datasource": {
@@ -308,7 +326,7 @@
             "uid": "prometheus"
           },
           "exemplar": true,
-          "expr": "avg_over_time(aqm_humidity_percentage{sensor=\"bme\"}[1m])",
+          "expr": "avg_over_time(aqm_humidity_percentage{sensor=\"scd\"}[1m])",
           "interval": "",
           "legendFormat": "{{host}}",
           "refId": "A"
@@ -318,6 +336,10 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -408,6 +430,10 @@
     },
     {
       "collapsed": false,
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -416,10 +442,23 @@
       },
       "id": 14,
       "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "grafana"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Raw Measurements",
       "type": "row"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -505,6 +544,10 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -594,6 +637,10 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -681,6 +728,10 @@
     },
     {
       "collapsed": false,
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -689,10 +740,23 @@
       },
       "id": 16,
       "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "grafana"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "System",
       "type": "row"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -784,7 +848,7 @@
     }
   ],
   "refresh": "30s",
-  "schemaVersion": 35,
+  "schemaVersion": 36,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -798,6 +862,6 @@
   "timezone": "",
   "title": "AQM",
   "uid": "s2CaVyfnk",
-  "version": 10,
+  "version": 2,
   "weekStart": ""
 }
