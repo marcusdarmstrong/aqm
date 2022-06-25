@@ -15,7 +15,9 @@ services:
       - ./aqi.rules.yml:/etc/prometheus/aqi.rules.yml
       - prometheus:/prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml --web.enable-remote-write-receiver --storage.tsdb.retention.time=5y'
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.enable-remote-write-receiver'
+      - '--storage.tsdb.retention.time=5y'
     ports:
       - 9090:9090
 
