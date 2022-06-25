@@ -8,6 +8,7 @@ services:
 
   nodeexporter:
     image: quay.io/prometheus/node-exporter:latest
+    hostname: nodeexporter
     container_name: nodeexporter
     command:
       - '--path.rootfs=/host'
@@ -17,7 +18,6 @@ services:
       - '--collector.diskstats'
       - '--collector.filesystem'
       - '--collector.meminfo'
-    network_mode: host
     pid: host
     restart: unless-stopped
     volumes:
