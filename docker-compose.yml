@@ -8,7 +8,6 @@ services:
 
   node_exporter:
     image: quay.io/prometheus/node-exporter:latest
-    hostname: node_exporter
     container_name: node_exporter
     command:
       - '--path.rootfs=/host'
