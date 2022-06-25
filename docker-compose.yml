@@ -6,9 +6,9 @@ volumes:
 
 services:
 
-  node_exporter:
+  nodeexporter:
     image: quay.io/prometheus/node-exporter:latest
-    container_name: node_exporter
+    container_name: nodeexporter
     command:
       - '--path.rootfs=/host'
       - '--collector.disable-defaults'
