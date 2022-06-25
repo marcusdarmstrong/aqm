@@ -6,6 +6,26 @@ volumes:
 
 services:
 
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    hostname: node_exporter
+    container_name: node_exporter
+    command:
+      - '--path.rootfs=/host'
+      - '--collector.disable-defaults'
+      - '--collector.cpu'
+      - '--collector.loadavg'
+      - '--collector.diskstats'
+      - '--collector.filesystem'
+      - '--collector.meminfo'
+    network_mode: host
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - '/:/host:ro,rslave'
+    ports:
+      - 9100:9100
+
   prometheus:
     container_name: prometheus
     hostname: prometheus
@@ -20,6 +40,7 @@ services:
       - '--storage.tsdb.retention.time=5y'
     ports:
       - 9090:9090
+    restart: unless-stopped
 
   grafana:
     container_name: grafana
@@ -33,3 +54,5 @@ services:
       - grafana:/var/lib/grafana
     ports:
       - 3000:3000
+    restart: unless-stopped
+
