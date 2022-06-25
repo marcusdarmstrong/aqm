@@ -1,0 +1,33 @@
+version: '3'
+
+volumes:
+  prometheus: {}
+  grafana: {}
+
+services:
+
+  prometheus:
+    container_name: prometheus
+    hostname: prometheus
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./aqi.rules.yml:/etc/prometheus/aqi.rules.yml
+      - prometheus:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml --web.enable-remote-write-receiver --storage.tsdb.retention.time=5y'
+    ports:
+      - 9090:9090
+
+  grafana:
+    container_name: grafana
+    hostname: grafana
+    image: grafana/grafana
+    volumes:
+      - ./grafana_config.ini:/etc/grafana/config.ini
+      - ./grafana_datasources.yml:/etc/grafana/provisioning/datasources/default.yaml
+      - ./grafana_dashboards.yml:/etc/grafana/provisioning/dashboards/default.yaml
+      - ./dashboard.json:/var/lib/grafana/dashboards/aqm_dashboard.json
+      - grafana:/var/lib/grafana
+    ports:
+      - 3000:3000
