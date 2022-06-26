@@ -8,9 +8,13 @@ const loop = async () => {
   	const routers = await response.json();
   	const hosts = new Set()
   	routers.forEach(({ rule }) => {
-  	  const match = rule.match(/^Host\(`([a-z0-9_-]+\.local)`\)$/)
-  	  if (match) {
-		    const [ full, host, ...rest ] = match;
+      const hostRule = rule.match(/Host\(([a-z0-9_\.`, \t-]+)\)/);
+      if (hostRule === null) {
+        return;
+      }
+      const [ _, hostSet, ...rest ] = hostRule;
+      for (const match of hostSet.matchAll(/`[a-z0-9\._-]+\.local`/g)) {
+		    const [ host ] = match;
 		    hosts.add(host);
   	  	if (!(host in registrations)) {
   	  	  const aborter = new AbortController();
@@ -18,9 +22,7 @@ const loop = async () => {
   	  	  registrations[host] = () => aborter.abort();
   	      console.log(`Published ${host}`);
   	    }
-  	  } else {
-  	    console.log(`${rule} did not match`);
-  	  }
+      }
   	});
   	Object.entries(registrations).forEach(([host, abort]) => {
   	  if (!hosts.has(host)) {

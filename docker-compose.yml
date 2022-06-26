@@ -99,6 +99,9 @@ services:
       - 8080:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.http.routers.api.rule=Host(`traefik.local`, `localhost`)"
+      - "traefik.http.routers.api.service=api@internal"
     networks:
       - public
       - routable
