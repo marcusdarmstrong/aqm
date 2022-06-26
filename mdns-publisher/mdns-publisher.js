@@ -2,8 +2,7 @@ import { spawn } from 'node:child_process';
 import { setInterval } from 'node:timers/promises';
 
 const registrations = {};
-
-for await (const ping of setInterval(30_000)) {
+const loop = async () => {
   const response = await fetch(`${process.env.TRAEFIK_API_HOST}/api/http/routers`)
   if (response.ok) {
   	const routers = await response.json();
@@ -15,9 +14,9 @@ for await (const ping of setInterval(30_000)) {
 		hosts.add(host);
   	  	if (!(host in registrations)) {
   	  	  const aborter = new AbortController();
-  	  	  spawn('avahi-publish', ['-R', '-a', `${host}.local`, `${process.env.BINDING_IP_ADDRESS}`], { signal: aborter.signal, stdio: 'inherit' });
+  	  	  spawn('avahi-publish', ['-R', '-a', `${host}`, `${process.env.BINDING_IP_ADDRESS}`], { signal: aborter.signal, stdio: 'inherit' });
   	  	  registrations[host] = () => aborter.abort();
-  	      console.log(`Published ${host}.local`);
+  	      console.log(`Published ${host}`);
   	    }
   	  } else {
   	    console.log(`${rule} did not match`);
@@ -30,4 +29,9 @@ for await (const ping of setInterval(30_000)) {
   	  }
   	});
   }
+}
+
+await loop();
+for await (const ping of setInterval(30_000)) {
+  await loop();
 }
