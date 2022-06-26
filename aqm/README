@@ -30,18 +30,6 @@ https://learn.adafruit.com/adafruit-bme680-humidity-temperature-barometic-pressu
 Install Prometheus Arduino:
 https://github.com/grafana/prometheus-arduino
 
-Get the monitoring environment set up. You'll need prometheus, and I suggest grafana on top of that:
-
-docker run -d -name=prometheus -p 9090:9090 prom/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles --web.enable-remote-write-receiver --storage.tsdb.retention.time=5y
-
-	TODO: copy/configure aqi.rules.yml
-
-docker run -d --name=grafana -p 3000:3000 grafana/grafana
-
-Configure a grafana datasource pointed to `http://host.docker.internal:9090`
-
-Set up a dashboard with the provided grafana dashboard description, if you'd like.
-
 Set the required configuration in the provided sketch:
 
 #define WIFI_SSID "Wifi SSID"
