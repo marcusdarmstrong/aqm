@@ -89,7 +89,7 @@ services:
     build: ./mdns-publisher
     network_mode: host
     environment:
-      TRAEFIK_API_HOST: 'http://host.docker.internal:8080'
+      TRAEFIK_API_HOST: 'http://traefik:8080'
       BINDING_IP_ADDRESS: '192.168.1.8'
     volumes:
       - /run/dbus/system_bus_socket:/run/dbus/system_bus_socket
