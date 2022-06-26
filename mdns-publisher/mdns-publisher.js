@@ -1,4 +1,4 @@
-import { exec } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { setInterval } from 'node:timers/promises';
 
 const registrations = {};
@@ -13,7 +13,7 @@ for await (const ping of setInterval(30_000)) {
 		const [ full, host, ...rest ] = match;
   	  	if (!(host in registrations)) {
   	  	  const aborter = new AbortController();
-  	  	  exec(`avahi-publish -R -a ${host}.local ${process.env.BINDING_IP_ADDRESS}`, { signal: aborter.signal });
+  	  	  spawn('avahi-publish', ['-R', '-a', `${host}.local`, `${process.env.BINDING_IP_ADDRESS}`], { signal: aborter.signal });
   	  	  registrations[host] = () => aborter.abort();
   	      console.log(`Published ${host}.local`);
   	    }
