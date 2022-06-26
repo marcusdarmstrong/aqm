@@ -87,7 +87,7 @@ services:
   mdns-publisher:
     container_name: mdns-publisher
     build: ./mdns-publisher
-    network_mode: host,
+    network_mode: host
     environment:
       TRAEFIK_API_HOST: 'host.docker.internal:8080'
       BINDING_IP_ADDRESS: '192.168.1.8'
