@@ -1,0 +1,6 @@
+{
+	"name": "mdns-publisher",
+	"private": true,
+	"type": "module",
+	"exports": "mdns-publisher.js"
+}

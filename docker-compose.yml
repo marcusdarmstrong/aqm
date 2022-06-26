@@ -86,8 +86,12 @@ services:
 
   mdns-publisher:
     container_name: mdns-publisher
-    image: hardillb/traefik-avahi-helper
-    restart: unless-stopped
+    build: ./mdns-publisher
+    network_mode: host,
+    environment:
+      TRAEFIK_API_HOST: 'host.docker.internal:8080',
+      BINDING_IP_ADDRESS: '192.168.1.8',
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - /run/dbus/system_bus_socket:/run/dbus/system_bus_socket
+    restart: unless-stopped
+
