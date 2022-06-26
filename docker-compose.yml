@@ -74,6 +74,7 @@ services:
   reverse-proxy:
     container_name: reverse-proxy
     image: traefik:v2.7
+    restart: unless-stopped
     command: 
       - '--api.insecure=true'
       - '--providers.docker'
@@ -86,6 +87,7 @@ services:
   mdns-publisher:
     container_name: mdns-publisher
     image: hardillb/traefik-avahi-helper
+    restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /run/dbus/system_bus_socket:/run/dbus/system_bus_socket
