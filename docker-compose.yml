@@ -57,6 +57,7 @@ services:
     restart: unless-stopped
     labels: 
       - "traefik.http.routers.prometheus.rule=Host(`prometheus.local`)"
+      - "traefik.docker.network=aqm_routable"
     networks:
       - monitoring
       - routable
@@ -80,6 +81,7 @@ services:
     restart: unless-stopped
     labels: 
       - "traefik.http.routers.grafana.rule=Host(`grafana.local`)"
+      - "traefik.docker.network=aqm_routable"
     networks:
       - routable
       - observability
