@@ -62,7 +62,7 @@ services:
     devices:
       - /dev/snd
     network_mode: host
+    privileged: true
     command:
       - '--'
-      - '-d hw:0'
       - '-c PCM'
