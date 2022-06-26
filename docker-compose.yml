@@ -109,10 +109,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
-      - "traefik.http.routers.api.rule=Host(`localhost`)"
+      - "traefik.http.routers.api.rule=Host(`traefik.local`, `localhost`)"
       - "traefik.http.routers.api.service=api@internal"
-      - "traefik.http.routers.dashboard.rule=Host(`traefik.local`)"
-      - "traefik.http.routers.dashboard.service=dashboard@internal"
       - "traefik.docker.network=aqm_routable"
     networks:
       - public
