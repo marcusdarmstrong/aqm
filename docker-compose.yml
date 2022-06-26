@@ -61,7 +61,7 @@ services:
     restart: unless-stopped
     devices:
       - /dev/snd
-    network: host
+    network_mode: host
     command:
       - '-d hw:0'
       - '-c PCM'
