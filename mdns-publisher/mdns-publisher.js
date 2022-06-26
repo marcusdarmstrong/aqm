@@ -15,7 +15,7 @@ for await (const ping of setInterval(30_000)) {
 		hosts.add(host);
   	  	if (!(host in registrations)) {
   	  	  const aborter = new AbortController();
-  	  	  spawn('avahi-publish', ['-R', '-a', `${host}.local`, `${process.env.BINDING_IP_ADDRESS}`], { signal: aborter.signal });
+  	  	  spawn('avahi-publish', ['-R', '-a', `${host}.local`, `${process.env.BINDING_IP_ADDRESS}`], { signal: aborter.signal, stdio: 'inherit' });
   	  	  registrations[host] = () => aborter.abort();
   	      console.log(`Published ${host}.local`);
   	    }
