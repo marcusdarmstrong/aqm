@@ -1,4 +1,4 @@
 FROM node:18
-RUN apt-get install -y libavahi-compat-libdnssd-dev
+RUN apt-get install -y avahi-utils
 COPY . .
 CMD ["node", "mdns-publisher.js"]
