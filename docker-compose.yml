@@ -55,3 +55,13 @@ services:
       - 3000:3000
     restart: unless-stopped
 
+  shairport:
+    container_name: shairport
+    image: mikebrady/shairport-sync
+    restart: unless-stopped
+    devices:
+      - /dev/snd
+    network: host
+    command:
+      - '-d hw:0'
+      - '-c PCM'
