@@ -30,8 +30,8 @@ services:
     hostname: prometheus
     image: prom/prometheus
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./aqi.rules.yml:/etc/prometheus/aqi.rules.yml
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./aqm/aqi.rules.yml:/etc/prometheus/aqi.rules.yml
       - prometheus:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -48,10 +48,10 @@ services:
     hostname: grafana
     image: grafana/grafana
     volumes:
-      - ./grafana_config.ini:/etc/grafana/config.ini
-      - ./grafana_datasources.yml:/etc/grafana/provisioning/datasources/default.yaml
-      - ./grafana_dashboards.yml:/etc/grafana/provisioning/dashboards/default.yaml
-      - ./dashboard.json:/var/lib/grafana/dashboards/aqm_dashboard.json
+      - ./grafana/config.ini:/etc/grafana/config.ini
+      - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/default.yaml
+      - ./grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/default.yaml
+      - ./aqm/dashboard.json:/var/lib/grafana/dashboards/aqm_dashboard.json
       - grafana:/var/lib/grafana
     ports:
       - 3000:3000
@@ -91,6 +91,7 @@ services:
     environment:
       TRAEFIK_API_HOST: 'http://localhost:8080'
       BINDING_IP_ADDRESS: '192.168.1.8'
+      POLL_INTERVAL: '30000'
     volumes:
       - /run/dbus/system_bus_socket:/run/dbus/system_bus_socket
     restart: unless-stopped
