@@ -4,6 +4,12 @@ volumes:
   prometheus: {}
   grafana: {}
 
+networks:
+  public: {}
+  routable: {}
+  monitoring: {}
+  observability: {}
+
 services:
 
   nodeexporter:
@@ -24,6 +30,8 @@ services:
       - '/:/host:ro,rslave'
     ports:
       - 9100:9100
+    networks:
+      - monitoring
 
   prometheus:
     container_name: prometheus
@@ -42,6 +50,10 @@ services:
     restart: unless-stopped
     labels: 
       - "traefik.http.routers.prometheus.rule=Host(`prometheus.local`)"
+    networks:
+      - monitoring
+      - routable
+      - observability
 
   grafana:
     container_name: grafana
@@ -52,12 +64,16 @@ services:
       - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/default.yaml
       - ./grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/default.yaml
       - ./aqm/dashboard.json:/var/lib/grafana/dashboards/aqm_dashboard.json
+      - ./node-exporter/dashboard.json:/var/lib/grafana/dashboards/node_dashboard.json
       - grafana:/var/lib/grafana
     ports:
       - 3000:3000
     restart: unless-stopped
     labels: 
       - "traefik.http.routers.grafana.rule=Host(`grafana.local`)"
+    networks:
+      - routable
+      - observability
 
   shairport:
     container_name: shairport
@@ -83,6 +99,9 @@ services:
       - 8080:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - public
+      - routable
 
   mdns-publisher:
     container_name: mdns-publisher

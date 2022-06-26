@@ -1,0 +1,1 @@
+This is a small little app that polls router configuration from Traefik's api and publishes/unbpublishes .local routes to the provided IP via avahi. It's not the most portable thing in the world but it works.
