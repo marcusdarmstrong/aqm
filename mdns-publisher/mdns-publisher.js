@@ -13,8 +13,8 @@ const loop = async () => {
         return;
       }
       const [ _, hostSet, ...rest ] = hostRule;
-      for (const match of hostSet.matchAll(/`[a-z0-9\._-]+\.local`/g)) {
-		    const [ host ] = match;
+      for (const match of hostSet.matchAll(/`([a-z0-9\._-]+\.local)`/g)) {
+		    const [ m, host ] = match;
 		    hosts.add(host);
   	  	if (!(host in registrations)) {
   	  	  const aborter = new AbortController();
