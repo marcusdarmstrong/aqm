@@ -68,6 +68,7 @@ services:
 
   grafana:
     container_name: grafana
+    hostname: grafana
     image: grafana/grafana
     volumes:
       - ./grafana/config.ini:/etc/grafana/config.ini
@@ -153,6 +154,7 @@ services:
 
   pihole:
     container_name: pihole
+    hostname: pihole
     image: pihole/pihole:latest
     ports:
       - "53:53/tcp"
