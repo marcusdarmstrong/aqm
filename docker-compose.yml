@@ -3,6 +3,9 @@ version: '3'
 volumes:
   prometheus: {}
   grafana: {}
+  #loki: {}
+  pihole: {}
+  dnsmasq: {}
 
 networks:
   public: {}
@@ -10,7 +13,7 @@ networks:
   routable: {
     internal: true
   }
-  monitoring: {
+  metrics: {
     internal: true
   }
   observability: {
@@ -37,7 +40,7 @@ services:
     ports:
       - 9100:9100
     networks:
-      - monitoring
+      - metrics
 
   prometheus:
     container_name: prometheus
@@ -57,7 +60,7 @@ services:
     labels: 
       - "traefik.http.routers.prometheus.rule=Host(`prometheus.local`)"
     networks:
-      - monitoring
+      - metrics
       - routable
       - observability
       # For remote write capabilities
@@ -82,6 +85,27 @@ services:
     networks:
       - routable
       - observability
+  #    - loki
+
+  # loki:
+  #   image: grafana/loki
+  #   ports:
+  #     - "3100:3100"
+  #   command: -config.file=/etc/loki/local-config.yaml
+  #   volumes:
+  #     - ./loki/config.yml:/etc/loki/local-config.yaml
+  #     - loki:???
+  #   networks:
+  #     - loki
+
+  # promtail:
+  #   image: grafana/promtail
+  #   volumes:
+  #     - /var/log:/var/log
+  #     - ./promtail/config.yml:/etc/promtail/config.yml
+  #   command: -config.file=/etc/promtail/config.yml
+  #   networks:
+  #     - loki
 
   shairport:
     container_name: shairport
@@ -126,4 +150,23 @@ services:
     volumes:
       - /run/dbus/system_bus_socket:/run/dbus/system_bus_socket
     restart: unless-stopped
+
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "8888:80/tcp"
+    environment:
+      WEBPASSWORD: 'admin'
+    volumes:
+      - 'pihole:/etc/pihole'
+      - 'dnsmasq:/etc/dnsmasq.d'    
+    restart: unless-stopped
+    networks:
+      - lan
+    labels:
+      - "traefik.http.routers.grafana.rule=Host(`pihole.local`)"
+      - "traefik.http.services.grafana.loadbalancer.server.port=8888"
 
