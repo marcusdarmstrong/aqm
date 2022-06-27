@@ -169,5 +169,5 @@ services:
       - routable
     labels:
       - "traefik.http.routers.pihole.rule=Host(`pihole.local`)"
-      - "traefik.http.services.pihole.loadbalancer.server.port=8888"
+      - "traefik.http.services.pihole.loadbalancer.server.port=80"
 
