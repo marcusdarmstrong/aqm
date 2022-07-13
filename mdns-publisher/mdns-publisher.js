@@ -18,7 +18,11 @@ const loop = async () => {
 		    hosts.add(host);
   	  	if (!(host in registrations)) {
   	  	  const aborter = new AbortController();
-  	  	  spawn('avahi-publish', ['-R', '-a', `${host}`, `${process.env.BINDING_IP_ADDRESS}`], { signal: aborter.signal, stdio: 'inherit' });
+  	  	  spawn(
+            'avahi-publish',
+            ['-R', '-a', `${host}`, `${process.env.BINDING_IP_ADDRESS}`],
+            { signal: aborter.signal, stdio: 'inherit' },
+          );
   	  	  registrations[host] = () => aborter.abort();
   	      console.log(`Published ${host}`);
   	    }

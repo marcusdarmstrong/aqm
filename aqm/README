@@ -10,8 +10,6 @@ The battery is capable of powering the sensor for something like 2h, so it's rea
 
 USB-C Cable
 USB-PD Power Supply
-A machine to run the monitoring software
-
 
 How to:
 
@@ -35,7 +33,7 @@ Set the required configuration in the provided sketch:
 #define WIFI_SSID "Wifi SSID"
 #define WIFI_PASSWORD "***********"
 #define NODE "kitchen" // This is an identifying name for the controller so multiples can be distinguished in prometheus across locations in your home, for example.
-#define URL "Marcuss-MBP.localdomain" // The hostname pointing to your prometheus instance
+#define URL "prometheus.local" // The hostname pointing to your prometheus instance
 #define PATH "/api/v1/write" // This is the default remote write path prometheus will use
 #define PORT 9090 
 

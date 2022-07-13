@@ -3,20 +3,27 @@ version: '3'
 volumes:
   prometheus: {}
   grafana: {}
-  #loki: {}
+  loki: {}
+  promtail: {}
   pihole: {}
   dnsmasq: {}
 
 networks:
   public: {}
-  lan: {}
+  # Traefik
   routable: {
     internal: true
   }
+  # Prometheus
   metrics: {
     internal: true
   }
+  # Grafana
   observability: {
+    internal: true
+  }
+  # Loki
+  logs: {
     internal: true
   }
 
@@ -25,6 +32,7 @@ services:
   nodeexporter:
     image: quay.io/prometheus/node-exporter:latest
     container_name: nodeexporter
+    restart: unless-stopped
     command:
       - '--path.rootfs=/host'
       - '--collector.disable-defaults'
@@ -34,18 +42,17 @@ services:
       - '--collector.filesystem'
       - '--collector.meminfo'
     pid: host
-    restart: unless-stopped
     volumes:
       - '/:/host:ro,rslave'
     ports:
-      - 9100:9100
+    #  - 9100:9100
     networks:
       - metrics
 
   prometheus:
     container_name: prometheus
-    hostname: prometheus
     image: prom/prometheus
+    restart: unless-stopped
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./aqm/aqi.rules.yml:/etc/prometheus/aqi.rules.yml
@@ -56,7 +63,6 @@ services:
       - '--storage.tsdb.retention.time=5y'
     ports:
       - 9090:9090
-    restart: unless-stopped
     labels: 
       - "traefik.http.routers.prometheus.rule=Host(`prometheus.local`)"
     networks:
@@ -64,11 +70,12 @@ services:
       - routable
       - observability
       # For remote write capabilities
-      - lan
+      - public
 
   grafana:
     container_name: grafana
     image: grafana/grafana
+    restart: unless-stopped
     volumes:
       - ./grafana/config.ini:/etc/grafana/config.ini
       - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/default.yaml
@@ -77,35 +84,38 @@ services:
       - ./node-exporter/dashboard.json:/var/lib/grafana/dashboards/node_dashboard.json
       - grafana:/var/lib/grafana
     ports:
-      - 3000:3000
-    restart: unless-stopped
+    #  - 3000:3000
     labels: 
       - "traefik.http.routers.grafana.rule=Host(`grafana.local`)"
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
     networks:
       - routable
       - observability
-  #    - loki1
 
-  # loki:
-  #   image: grafana/loki
-  #   ports:
-  #     - "3100:3100"
-  #   command: -config.file=/etc/loki/local-config.yaml
-  #   volumes:
-  #     - ./loki/config.yml:/etc/loki/local-config.yaml
-  #     - loki:???
-  #   networks:
-  #     - loki
+  loki:
+    container_name: loki
+    image: grafana/loki
+    restart: unless-stopped
+    ports:
+     # - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki/config.yml:/etc/loki/local-config.yaml
+      - loki:/var/lib/loki
+    networks:
+      - logs
+      - observability
 
-  # promtail:
-  #   image: grafana/promtail
-  #   volumes:
-  #     - /var/log:/var/log
-  #     - ./promtail/config.yml:/etc/promtail/config.yml
-  #   command: -config.file=/etc/promtail/config.yml
-  #   networks:
-  #     - loki
+  promtail:
+    container_name: promtail
+    image: grafana/promtail
+    restart: unless-stopped
+    volumes:
+      - /var/log:/var/log
+      - ./promtail/config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - logs
 
   shairport:
     container_name: shairport
@@ -133,7 +143,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
-      - "traefik.http.routers.api.rule=Host(`traefik.local`, `localhost`)"
+      - "traefik.http.routers.api.rule=Host(`traefik.local`)"
       - "traefik.http.routers.api.service=api@internal"
     networks:
       - public
@@ -142,34 +152,47 @@ services:
   mdns-publisher:
     container_name: mdns-publisher
     build: ./mdns-publisher
-    # network_mode: host
+    restart: unless-stopped
     environment:
       TRAEFIK_API_HOST: 'http://reverse-proxy:8080'
       BINDING_IP_ADDRESS: '192.168.1.8'
       POLL_INTERVAL: '30000'
     volumes:
       - /run/dbus/system_bus_socket:/run/dbus/system_bus_socket
-    restart: unless-stopped
     networks:
       - routable
 
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
+    restart: unless-stopped
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "8888:80/tcp"
+      # - "8888:80/tcp"
     environment:
       WEBPASSWORD: 'admin'
     volumes:
       - 'pihole:/etc/pihole'
       - 'dnsmasq:/etc/dnsmasq.d'    
-    restart: unless-stopped
     networks:
-      - lan
+      - public
       - routable
     labels:
       - "traefik.http.routers.pihole.rule=Host(`pihole.local`)"
       - "traefik.http.services.pihole.loadbalancer.server.port=80"
+
+  webhook:
+    container_name: webhook
+    image: staticfloat/docker-webhook
+    restart: unless-stopped
+    labels:
+      - "traefik.http.routers.webhook.rule=Host(`webhook.local`) || PathPrefix(`/.webhook/`)"
+    volumes:
+      # Mount the docker socket to let us run docker commands in hook scripts.
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./webhook/:/app/hooks
+    environment:
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET}
+      - WEBHOOK_BRANCH_LIST=master,main
 
