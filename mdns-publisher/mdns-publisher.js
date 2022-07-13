@@ -3,10 +3,10 @@ import { setInterval } from 'node:timers/promises';
 
 const registrations = {};
 const loop = async () => {
-  const response = await fetch(`${process.env.TRAEFIK_API_HOST}/api/http/routers`)
+  const response = await fetch(`${process.env.TRAEFIK_API_HOST}/api/http/routers`);
   if (response.ok) {
     const routers = await response.json();
-    const hosts = new Set()
+    const hosts = new Set();
     routers.forEach(({ rule }) => {
       const hostRule = rule.match(/Host\(([a-z0-9_\.`, \t-]+)\)/);
       if (hostRule === null) {
